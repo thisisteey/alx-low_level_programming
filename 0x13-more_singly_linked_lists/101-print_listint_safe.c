@@ -10,6 +10,9 @@ size_t print_listint_safe(const listint_t *head)
 	size_t numnode = 0;
 	const listint_t *initialhead = NULL;
 
+	if (head == NULL)
+		return (0);
+
 	while (head != NULL && head != initialhead)
 	{
 		if (initialhead == NULL)
@@ -17,6 +20,11 @@ size_t print_listint_safe(const listint_t *head)
 		printf("[%p] %d\n", (void *) head, head->n);
 		head = head->next;
 		numnode++;
+	}
+	if (head == intialhead)
+	{
+		printf("-> [%p] %d\n", (void *) head, head->n);
+		exit(98);
 	}
 	return (numnode);
 }
