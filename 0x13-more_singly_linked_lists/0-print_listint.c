@@ -9,10 +9,10 @@ size_t print_listnt(const listnt_t *h)
 {
 	size_t numnodes = 0;
 
-	while(h)
+	while (h)
 	{
-		printf("%d\n", h->n);
 		numnodes++;
+		printf("%d\n", h->n);
 		h = h->next;
 	}
 	return (numnodes);
