@@ -8,29 +8,25 @@
  */
 listint_t *find_listint_loop(listint_t *head)
 {
-	listint_t *tardy, *swift;
+	listint_t *tardy = head;
+	listint_t *swift = head;
 
-	if (head == NULL || head->next == NULL)
+	if (!head)
 		return (NULL);
-
-	tardy = head->next;
-	swift = (head->next)->next;
-
-	while (swift)
+	while (tardy && swift && swift->next)
 	{
-		if (tardy == swift)
+		swift = swift->next->next;
+		tardy = tardy->next;
+		if (swift == tardy)
 		{
-			tardy = swift;
-
+			tardy = head;
 			while (tardy != swift)
 			{
 				tardy = tardy->next;
 				swift = swift->next;
 			}
-			return (tardy);
+			return (swift);
 		}
-		tardy = tardy->next;
-		swift = (swift->next)->next;
 	}
 	return (NULL);
 }
