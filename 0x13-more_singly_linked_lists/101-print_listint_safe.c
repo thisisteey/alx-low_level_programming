@@ -1,60 +1,61 @@
 #include "lists.h"
 
 /**
- * count_unique_nodes - count the number of uniques nodes
- * @head: pointer to the head of the list
- * Return: 0 on code success
+ * looped_listint_len - Counts the number of unique nodes
+ * @head: A pointer to the head of the list
+ * Return: return 0
  */
-size_t count_unique_nodes(const listint_t *head)
+size_t looped_listint_len(const listint_t *head)
 {
-	listint_t *slowptr, *fastptr;
-	size_t unique_nodes = 1;
+	const listint_t *slow, *fast;
+	size_t nodes = 1;
 
 	if (head == NULL || head->next == NULL)
 		return (0);
 
-	slowptr = head->next;
-	fastptr = (head->next)->next;
+	slow = head->next;
+	fast = (head->next)->next;
 
-	while (fastptr)
+	while (fast)
 	{
-		if (slowptr == fastptr)
+		if (slow == fast)
 		{
-			slowptr = fastptr;
-			while (slowptr != fastptr)
+			slow = head;
+			while (slow != fast)
 			{
-				unique_nodes++;
-				slowptr = slowptr->next;
-				fastptr = fastptr->next;
+				nodes++;
+				slow = slow->next;
+				fast = fast->next;
 			}
-			slowptr = slowptr->next;
-			while (slowptr != fastptr)
+			slow = slow->next;
+			while (slow != fast)
 			{
-				unique_nodes++;
-				slowptr = slowptr->next;
+				nodes++;
+				slow = slow->next;
 			}
-			return (unique_nodes);
+
+			return (nodes);
 		}
-		slowptr = slowptr->next;
-		fastptr = (fastptr->next)->next;
+		slow = slow->next;
+		fast = (fast->next)->next;
 	}
 	return (0);
 }
 
 /**
- * print_listint_safe - prints a list safely
- * @head: pointer to the head of a list
- * Return: number of nodes in the list
+ * print_listint_safe - Prints a list
+ * @head: A pointer to the head of the list
+ * Return: The number of nodes in the list
  */
 size_t print_listint_safe(const listint_t *head)
 {
-	size_t unique_nodes, counter = 0;
+	size_t nodes, index = 0;
 
-	unique_nodes = count_unique_nodes(head);
+	nodes = looped_listint_len(head);
 
-	if (unique_nodes == 0)
+	if (nodes == 0)
 	{
-		for (; head != NULL ; unique_nodes++)
+		for (; head != NULL; nodes++)
 		{
 			printf("[%p] %d\n", (void *)head, head->n);
 			head = head->next;
@@ -62,12 +63,12 @@ size_t print_listint_safe(const listint_t *head)
 	}
 	else
 	{
-		for (counter = 0 ; counter < unique_nodes ; counter++)
+		for (index = 0; index < nodes; index++)
 		{
 			printf("[%p] %d\n", (void *)head, head->n);
 			head = head->next;
 		}
 		printf("-> [%p] %d\n", (void *)head, head->n);
 	}
-	return (unique_nodes);
+	return (nodes);
 }
