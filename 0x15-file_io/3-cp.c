@@ -33,12 +33,12 @@ void close_fd(int fd)
 }
 
 /**
- * copy_file - copies the content ofa file to another
+ * main - copies the content ofa file to another
  * @argc: number of arguments
  * @argv: argument vector
  * Return: 0 on code success
  */
-int copy_file(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int src_fd, dest_fd, r, w;
 	char *container;
