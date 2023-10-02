@@ -1,205 +1,211 @@
-#include "main.h"
-
-void print_elf_address(char *e_ptr);
-void print_elf_type(char *e_ptr);
-void print_elf_osabi(char *e_ptr);
-void print_elf_version(char *e_ptr);
-void print_elf_data(char *e_ptr);
-void print_elf_magic(char *e_ptr);
-void print_elf_class(char *e_ptr);
-int check_if_elf(char *e_ptr);
-int main(int argc, char *argv[]);
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <elf.h>
 
 /**
- * print_elf_address - prints the entry point address of the ELF file
- * @e_ptr: pointer to the ELF header
- * Return: void
+ * print_addr - prints address
+ * @ptr: magic.
+ * Return: no return.
  */
-void print_elf_address(char *e_ptr)
+void print_addr(char *ptr)
 {
-	int x, str;
-	char elf_class;
+	int i;
+	int begin;
+	char sys;
 
 	printf("  Entry point address:               0x");
 
-	elf_class = e_ptr[4] + '0';
-	if (elf_class == '1')
+	sys = ptr[4] + '0';
+	if (sys == '1')
 	{
-		str = 26;
+		begin = 26;
 		printf("80");
-		for (x = str ; x >= 22; x--)
+		for (i = begin; i >= 22; i--)
 		{
-			if (e_ptr[x] > 0)
-				printf("%x", e_ptr[x]);
-			else if (e_ptr[x] < 0)
-				printf("%x", 256 + e_ptr[x]);
+			if (ptr[i] > 0)
+				printf("%x", ptr[i]);
+			else if (ptr[i] < 0)
+				printf("%x", 256 + ptr[i]);
 		}
-		if (e_ptr[7] == 6)
+		if (ptr[7] == 6)
 			printf("00");
 	}
-	if (elf_class == '2')
+
+	if (sys == '2')
 	{
-		str = 26;
-		for (x = str ; x > 23; x--)
+		begin = 26;
+		for (i = begin; i > 23; i--)
 		{
-			if (e_ptr[x] >= 0)
-				printf("%02x", e_ptr[x]);
-			else if (e_ptr[x] < 0)
-				printf("%02x", 256 + e_ptr[x]);
+			if (ptr[i] >= 0)
+				printf("%02x", ptr[i]);
+
+			else if (ptr[i] < 0)
+				printf("%02x", 256 + ptr[i]);
+
 		}
 	}
 	printf("\n");
 }
 
 /**
- * print_elf_type - prints the type of ELF file
- * @e_ptr: pointer to the ELF header
- * Return: void
+ * print_type - prints type
+ * @ptr: magic.
+ * Return: no return.
  */
-void print_elf_type(char *e_ptr)
+void print_type(char *ptr)
 {
-	char elftype = e_ptr[16];
+	char type = ptr[16];
 
-	if (e_ptr[5] == 1)
-		elftype = e_ptr[16];
+	if (ptr[5] == 1)
+		type = ptr[16];
 	else
-		elftype = e_ptr[17];
+		type = ptr[17];
 
 	printf("  Type:                              ");
-	if (elftype == 0)
+	if (type == 0)
 		printf("NONE (No file type)\n");
-	else if (elftype == 1)
+	else if (type == 1)
 		printf("REL (Relocatable file)\n");
-	else if (elftype == 2)
+	else if (type == 2)
 		printf("EXEC (Executable file)\n");
-	else if (elftype == 3)
+	else if (type == 3)
 		printf("DYN (Shared object file)\n");
-	else if (elftype == 4)
+	else if (type == 4)
 		printf("CORE (Core file)\n");
 	else
-		printf("<unknown: %x>\n", elftype);
+		printf("<unknown: %x>\n", type);
 }
-
 /**
- * print_elf_osabi - prints the operating system and ABI info
- * @e_ptr: pointer to the ELF header
- * Return: void
+ * print_osabi - prints osabi
+ * @ptr: magic.
+ * Return: no return.
  */
-void print_elf_osabi(char *e_ptr)
+void print_osabi(char *ptr)
 {
-	char elfosabi = e_ptr[7];
+	char osabi = ptr[7];
 
 	printf("  OS/ABI:                            ");
-	if (elfosabi == 0)
+	if (osabi == 0)
 		printf("UNIX - System V\n");
-	else if (elfosabi == 2)
+	else if (osabi == 2)
 		printf("UNIX - NetBSD\n");
-	else if (elfosabi == 6)
+	else if (osabi == 6)
 		printf("UNIX - Solaris\n");
 	else
-		printf("<unknown: %x>\n", elfosabi);
-	printf("  ABI Version:                       %d\n", e_ptr[8]);
+		printf("<unknown: %x>\n", osabi);
+
+	printf("  ABI Version:                       %d\n", ptr[8]);
 }
 
 /**
- * print_elf_version - prints the version info of the ELF file
- * @e_ptr: pointer to the ELF header
- * Return: void
+ * print_version - prints version
+ * @ptr: magic.
+ * Return: no return.
  */
-void print_elf_version(char *e_ptr)
+void print_version(char *ptr)
 {
-	int elfversion = e_ptr[6];
+	int version = ptr[6];
 
-	printf("  Version:                           %d", elfversion);
-	if (elfversion == EV_CURRENT)
+	printf("  Version:                           %d", version);
+
+	if (version == EV_CURRENT)
 		printf(" (current)");
+
 	printf("\n");
 }
-
 /**
- * print_elf_data - prints the data encoding info of the ELF file
- * @e_ptr: pointer to the ELF header
- * Return: void
+ * print_data - prints data
+ * @ptr: magic.
+ * Return: no return.
  */
-void print_elf_data(char *e_ptr)
+void print_data(char *ptr)
 {
-	char elfdata = e_ptr[5];
+	char data = ptr[5];
 
 	printf("  Data:                              2's complement");
-	if (elfdata == 1)
+	if (data == 1)
 		printf(", little endian\n");
-	if (elfdata == 2)
+
+	if (data == 2)
 		printf(", big endian\n");
 }
 
 /**
- * print_elf_magic - prints magic bytes of the ELF file
- * @e_ptr: pointer to the ELF header
- * Return: void
+ * print_magic - prints magic info.
+ * @ptr: magic.
+ * Return: no return.
  */
-void print_elf_magic(char *e_ptr)
+void print_magic(char *ptr)
 {
-	int x = 0;
+	int bytes;
 
 	printf("  Magic:  ");
-	for (x = 0 ; x < 16; x++)
-		printf(" %02x", e_ptr[x]);
+
+	for (bytes = 0; bytes < 16; bytes++)
+		printf(" %02x", ptr[bytes]);
+
 	printf("\n");
+
 }
-
 /**
- * print_elf_class - prints the class of the ELF file
- * @e_ptr: pointer to the ELF header
- * Return: void
+ * check_sys - check the version system.
+ * @ptr: magic.
+ * Return: no return.
  */
-void print_elf_class(char *e_ptr)
+void check_sys(char *ptr)
 {
-	char elfclass = e_ptr[4] + '0';
+	char sys = ptr[4] + '0';
 
-	if (elfclass == '0')
+	if (sys == '0')
 		exit(98);
-	printf("ELF Header:\n");
-	print_elf_magic(e_ptr);
 
-	if (elfclass == '1')
+	printf("ELF Header:\n");
+	print_magic(ptr);
+
+	if (sys == '1')
 		printf("  Class:                             ELF32\n");
-	if (elfclass == '2')
+
+	if (sys == '2')
 		printf("  Class:                             ELF64\n");
 
-	print_elf_data(e_ptr);
-	print_elf_version(e_ptr);
-	print_elf_osabi(e_ptr);
-	print_elf_type(e_ptr);
-	print_elf_address(e_ptr);
+	print_data(ptr);
+	print_version(ptr);
+	print_osabi(ptr);
+	print_type(ptr);
+	print_addr(ptr);
 }
-
 /**
- * check_if_elf - checks if it is an elf file
- * @e_ptr: ppinter to the ELF header
- * Return: 1 if it is an ELF file and 0 if not
+ * check_elf - check if it is an elf file.
+ * @ptr: magic.
+ * Return: 1 if it is an elf file. 0 if not.
  */
-int check_if_elf(char *e_ptr)
+int check_elf(char *ptr)
 {
-	int x = (int)e_ptr[0];
-	char E = e_ptr[1];
-	char L = e_ptr[2];
-	char F = e_ptr[3];
+	int addr = (int)ptr[0];
+	char E = ptr[1];
+	char L = ptr[2];
+	char F = ptr[3];
 
-	if (x == 127 && E == 'E' && L == 'L' && F == 'F')
+	if (addr == 127 && E == 'E' && L == 'L' && F == 'F')
 		return (1);
+
 	return (0);
 }
 
 /**
- * main - main function of the program
- * @argc: number of arguments
- * @argv: array of arguments
- * Return: 0 on code success
+ * main - check the code for Holberton School students.
+ * @argc: number of arguments.
+ * @argv: arguments vector.
+ * Return: Always 0.
  */
 int main(int argc, char *argv[])
 {
-	int fd, result;
-	char e_ptr[27];
+	int fd, ret_read;
+	char ptr[27];
 
 	if (argc != 2)
 	{
@@ -214,20 +220,24 @@ int main(int argc, char *argv[])
 		dprintf(STDERR_FILENO, "Err: file can not be open\n");
 		exit(98);
 	}
-	lseek(fd, 0, SEEK_SET);
-	result = read(fd, e_ptr, 27);
 
-	if (result == -1)
+	lseek(fd, 0, SEEK_SET);
+	ret_read = read(fd, ptr, 27);
+
+	if (ret_read == -1)
 	{
 		dprintf(STDERR_FILENO, "Err: The file can not be read\n");
 		exit(98);
 	}
-	if (!check_if_elf(e_ptr))
+
+	if (!check_elf(ptr))
 	{
 		dprintf(STDERR_FILENO, "Err: It is not an ELF\n");
 		exit(98);
 	}
-	print_elf_class(e_ptr);
+
+	check_sys(ptr);
 	close(fd);
+
 	return (0);
 }
