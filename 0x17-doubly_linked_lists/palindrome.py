@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # finds palindrome made from the product of two 3-digit numbers
-# using def getpalindrome(x) prototype
+# using def ispalindrome(n) prototype
 
-def getpalindrome(x):
-    st = str(x)
+def ispalindrome(n):
+    st = str(n)
     return st == st[::-1]
 arr = []
 for num in range(999, 99, -1):
