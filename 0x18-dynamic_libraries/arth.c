@@ -45,12 +45,12 @@ int mul(int x, int y)
 }
 
 /**
- * divid - gets the division of two integers
+ * div - gets the division of two integers
  * @x: first integer
  * @y: second integer
  * Return: the division of the two integers
  */
-int divid(int x, int y)
+int div(int x, int y)
 {
 	return (x / y);
 }
