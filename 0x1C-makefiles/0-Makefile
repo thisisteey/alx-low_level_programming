@@ -1,3 +1,4 @@
+# Makefile with an executable named school where the all rule builds the executable
 all: main.c school.c
 	gcc main.c school.c -o school
 
