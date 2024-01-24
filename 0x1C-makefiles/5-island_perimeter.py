@@ -1,4 +1,4 @@
-#!usr/bin/python3
+#!/usr/bin/python3
 """An island perimeter measuring function is defined"""
 
 
